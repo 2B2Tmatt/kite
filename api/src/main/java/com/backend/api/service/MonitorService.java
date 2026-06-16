@@ -16,29 +16,29 @@ public class MonitorService {
     private final PingRepository pingRepository;
     private final MonitorRepository monitorRepository;
 
-    public void createMontior(Monitor monitor){
-       monitorRepository.save(monitor);
+    public void createMontior(Monitor monitor) {
+        monitorRepository.save(monitor);
     }
 
     @Async
-    public void executeMonitorPing(Monitor monitor){
+    public void executeMonitorPing(Monitor monitor) {
         long startTime = System.currentTimeMillis();
-        try{
+        try {
             int code = client.get()
                     .uri(monitor.getUrl())
                     .retrieve()
                     .toBodilessEntity()
                     .getStatusCode()
                     .value();
-            saveResult(monitor.getId(), code, System.currentTimeMillis()-startTime, code==200);
-        }catch (Exception e){
-            saveResult(monitor.getId(), 0, System.currentTimeMillis()-startTime, false);
+            saveResult(monitor, code, System.currentTimeMillis() - startTime, code == 200);
+        } catch (Exception e) {
+            saveResult(monitor, 0, System.currentTimeMillis() - startTime, false);
         }
     }
 
-    private void saveResult(Long monitorId, int code, long responseTimeMs, boolean isUp){
+    private void saveResult(Monitor monitor, int code, long responseTimeMs, boolean isUp) {
         Ping ping = new Ping();
-        ping.setMonitorId(monitorId);
+        ping.setMonitor(monitor);
         ping.setStatusCode(code);
         ping.setResponseTimeMs(responseTimeMs);
         ping.setUp(isUp);

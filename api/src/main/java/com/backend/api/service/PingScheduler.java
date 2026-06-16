@@ -3,7 +3,6 @@ package com.backend.api.service;
 import com.backend.api.model.Monitor;
 import com.backend.api.repository.MonitorRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,6 @@ import java.util.List;
 public class PingScheduler {
     private final MonitorService monitorService;
     private final MonitorRepository monitorRepository;
-    private final AsyncTaskExecutor taskExecutor;
 
     @Scheduled(fixedRate = 600000)
     public void pingOneMinuteMonitors(){
