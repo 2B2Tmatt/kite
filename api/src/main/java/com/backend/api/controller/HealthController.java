@@ -5,21 +5,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/health")
+@RequestMapping("/api/health")
 public class HealthController {
 
-    @GetMapping("/public")
+    @GetMapping("/unauthenticated")
     public String allAccess() {
         return "public health up";
     }
 
-    @GetMapping("/user")
+    @GetMapping("/authenticated")
     public String userAccess() {
-        return "User Content with JWT";
-    }
-
-    @GetMapping("/special")
-    public String specialAcess() {
-        return "Special access with JWT";
+        return "private health up";
     }
 }

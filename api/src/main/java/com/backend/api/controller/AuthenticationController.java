@@ -1,54 +1,40 @@
 package com.backend.api.controller;
 
-import com.backend.api.model.User;
-import com.backend.api.repository.UserRepository;
-import com.backend.api.security.JwtUtils;
+import com.backend.api.dto.LoginRequest;
+import com.backend.api.dto.SignupRequest;
+import com.backend.api.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/auth")
+@RequestMapping("/api/public/auth")
 @AllArgsConstructor
 public class AuthenticationController {
 
-    private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private PasswordEncoder encoder;
-    private JwtUtils jwtUtils;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/signin")
-    public String authenticateUser(@RequestBody User user) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        user.getEmail(),
-                        user.getPassword()
-                )
-        );
+    public ResponseEntity<String> userSignin(@RequestBody @Valid LoginRequest request) {
+        String token = authenticationService.login(request);
+        return ResponseEntity.ok(token);
+    }
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        return jwtUtils.generateToken(userDetails.getUsername());
+    @PostMapping("/login")
+    public ResponseEntity<String> userLogin(@RequestBody @Valid LoginRequest request) {
+        String token = authenticationService.login(request);
+        return ResponseEntity.ok(token);
     }
 
     @PostMapping("/signup")
-    public String registerUser(@RequestBody User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            return "User already exists";
-        }
+    public ResponseEntity<String> userSignup(@RequestBody @Valid SignupRequest request) {
+        String message = authenticationService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(message);
 
-        final User newUser = new User(
-                null,
-                user.getEmail(),
-                encoder.encode(user.getPassword())
-        );
-        userRepository.save(newUser);
-        return "User registered sucessfully";
     }
 }

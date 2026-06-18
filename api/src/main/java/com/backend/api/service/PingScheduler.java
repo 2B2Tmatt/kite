@@ -14,18 +14,19 @@ public class PingScheduler {
     private final MonitorService monitorService;
     private final MonitorRepository monitorRepository;
 
-    @Scheduled(fixedRate = 600000)
-    public void pingOneMinuteMonitors(){
+    @Scheduled(fixedRate = 60000)
+    public void pingOneMinuteMonitors() {
         List<Monitor> oneMinuteMonitors = monitorRepository.findByPollPeriodSeconds(60);
-        for(Monitor monitor: oneMinuteMonitors) {
+        for (Monitor monitor : oneMinuteMonitors) {
+            IO.println("Monitor: " + monitor);
             monitorService.executeMonitorPing(monitor);
         }
     }
 
     @Scheduled(fixedRate = 300000)
-    public void pingFiveMinuteMonitors(){
+    public void pingFiveMinuteMonitors() {
         List<Monitor> fiveMinuteMonitors = monitorRepository.findByPollPeriodSeconds(300);
-        for(Monitor monitor: fiveMinuteMonitors){
+        for (Monitor monitor : fiveMinuteMonitors) {
             monitorService.executeMonitorPing(monitor);
         }
     }

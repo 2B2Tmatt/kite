@@ -49,7 +49,10 @@ public class WebSecurityConfig {
                 .exceptionHandling(e -> e.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a ->
-                        a.requestMatchers("/api/public/auth/**")
+                        a.requestMatchers("/api/public/auth/**",
+                                        "/scalar/**",
+                                        "/v3/api-docs/**",
+                                        "/api/health/unauthenticated")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
