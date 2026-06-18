@@ -18,7 +18,6 @@ public class PingScheduler {
     public void pingOneMinuteMonitors() {
         List<Monitor> oneMinuteMonitors = monitorRepository.findByPollPeriodSeconds(60);
         for (Monitor monitor : oneMinuteMonitors) {
-            IO.println("Monitor: " + monitor);
             monitorService.executeMonitorPing(monitor);
         }
     }

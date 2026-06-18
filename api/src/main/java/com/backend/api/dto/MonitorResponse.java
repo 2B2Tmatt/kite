@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.URL;
 
 public record MonitorResponse(
+        Long id,
+
         @URL(message = "Must be a valid URL")
         @NotNull(message = "URL cannot be null")
         String url,

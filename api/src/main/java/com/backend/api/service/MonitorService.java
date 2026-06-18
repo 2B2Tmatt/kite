@@ -7,11 +7,14 @@ import com.backend.api.model.Ping;
 import com.backend.api.repository.MonitorRepository;
 import com.backend.api.repository.PingRepository;
 import com.backend.api.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -26,7 +29,9 @@ public class MonitorService {
         Monitor monitor = new Monitor(request.url(), request.pollPeriodSeconds(), request.active());
         monitor.setUser(userRepository.getReferenceById(userId));
         Monitor saved = monitorRepository.save(monitor);
-        return new MonitorResponse(saved.getUrl(),
+        return new MonitorResponse(
+                saved.getId(),
+                saved.getUrl(),
                 saved.getPollPeriodSeconds(),
                 saved.isActive(),
                 saved.getId());
@@ -55,5 +60,16 @@ public class MonitorService {
         ping.setResponseTimeMs(responseTimeMs);
         ping.setUp(isUp);
         pingRepository.save(ping);
+    }
+
+    public List<Monitor> getAllUserMonitors(Long userId) {
+        return monitorRepository.findAllByUserid(userId);
+    }
+
+    public void deleteMonitorById(Long id) {
+        Monitor monitor = monitorRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Monitor not found with id: " + id));
+        monitorRepository.delete(monitor);
     }
 }

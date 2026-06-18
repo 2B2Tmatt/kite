@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface MonitorRepository extends JpaRepository<Monitor, Long> {
     List<Monitor> findByPollPeriodSeconds(int seconds);
+
+    List<Monitor> findAllByUserid(Long userId);
 }
