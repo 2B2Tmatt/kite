@@ -2,6 +2,7 @@ package com.backend.api.controller;
 
 import com.backend.api.dto.MonitorRequest;
 import com.backend.api.dto.MonitorResponse;
+import com.backend.api.model.Monitor;
 import com.backend.api.security.KiteUserDetails;
 import com.backend.api.service.MonitorService;
 import jakarta.validation.Valid;
@@ -20,16 +21,24 @@ public class MonitorController {
     private MonitorService monitorService;
 
     @PostMapping
-    public ResponseEntity<MonitorResponse> createMonitor(@RequestBody @Valid MonitorRequest monitor,
-                                                         @AuthenticationPrincipal KiteUserDetails userDetails) {
-        MonitorResponse monitorResponse = monitorService.createMonitor(monitor, userDetails.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(monitorResponse);
+    public ResponseEntity<MonitorResponse> createMonitor(
+            @RequestBody @Valid MonitorRequest monitor,
+            @AuthenticationPrincipal KiteUserDetails userDetails) {
+        Monitor createdMontior = monitorService.createMonitor(monitor, userDetails.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                new MonitorResponse(
+                        createdMontior.getId(),
+                        createdMontior.getUrl(),
+                        createdMontior.getPollPeriodSeconds(),
+                        createdMontior.isActive(),
+                        userDetails.getId()
+                ));
     }
 
     @GetMapping
     public ResponseEntity<List<MonitorResponse>> getAllUserMonitors(
             @AuthenticationPrincipal KiteUserDetails userDetails) {
-        List<MonitorResponse> resp = monitorService.getAllUserMonitors(userDetails.getId())
+        List<MonitorResponse> monitorList = monitorService.getAllUserMonitors(userDetails.getId())
                 .stream()
                 .map(monitor -> new MonitorResponse(
                         monitor.getId(),
@@ -39,7 +48,7 @@ public class MonitorController {
                         userDetails.getId()
                 ))
                 .toList();
-        return ResponseEntity.ok(resp);
+        return ResponseEntity.ok(monitorList);
     }
 
 
@@ -48,4 +57,21 @@ public class MonitorController {
         monitorService.deleteMonitorById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MonitorResponse> updateMonitorById(
+            @PathVariable Long id,
+            @RequestBody MonitorRequest monitor,
+            @AuthenticationPrincipal KiteUserDetails userDetails
+    ) {
+        Monitor updatedMonitor = monitorService.updateMonitorById(id, monitor);
+        return ResponseEntity.ok(new MonitorResponse(
+                updatedMonitor.getId(),
+                updatedMonitor.getUrl(),
+                updatedMonitor.getPollPeriodSeconds(),
+                updatedMonitor.isActive(),
+                userDetails.getId()
+        ));
+    }
+
 }

@@ -1,7 +1,6 @@
 package com.backend.api.service;
 
 import com.backend.api.dto.MonitorRequest;
-import com.backend.api.dto.MonitorResponse;
 import com.backend.api.model.Monitor;
 import com.backend.api.model.Ping;
 import com.backend.api.repository.MonitorRepository;
@@ -25,16 +24,10 @@ public class MonitorService {
     private final UserRepository userRepository;
 
 
-    public MonitorResponse createMonitor(@RequestBody MonitorRequest request, Long userId) {
+    public Monitor createMonitor(@RequestBody MonitorRequest request, Long userId) {
         Monitor monitor = new Monitor(request.url(), request.pollPeriodSeconds(), request.active());
         monitor.setUser(userRepository.getReferenceById(userId));
-        Monitor saved = monitorRepository.save(monitor);
-        return new MonitorResponse(
-                saved.getId(),
-                saved.getUrl(),
-                saved.getPollPeriodSeconds(),
-                saved.isActive(),
-                saved.getId());
+        return monitorRepository.save(monitor);
     }
 
     @Async
@@ -63,7 +56,7 @@ public class MonitorService {
     }
 
     public List<Monitor> getAllUserMonitors(Long userId) {
-        return monitorRepository.findAllByUserid(userId);
+        return monitorRepository.findAllByUserId(userId);
     }
 
     public void deleteMonitorById(Long id) {
@@ -71,5 +64,15 @@ public class MonitorService {
                 .findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Monitor not found with id: " + id));
         monitorRepository.delete(monitor);
+    }
+
+    public Monitor updateMonitorById(Long id, MonitorRequest monitorRequest) {
+        Monitor monitor = monitorRepository
+                .findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Monitor not found with id: " + id));
+        monitor.setUrl(monitorRequest.url());
+        monitor.setPollPeriodSeconds(monitorRequest.pollPeriodSeconds());
+        monitor.setActive(monitorRequest.active());
+        return monitorRepository.save(monitor);
     }
 }
