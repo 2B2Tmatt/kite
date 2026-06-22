@@ -24,13 +24,13 @@ public class MonitorController {
     public ResponseEntity<MonitorResponse> createMonitor(
             @RequestBody @Valid MonitorRequest monitor,
             @AuthenticationPrincipal KiteUserDetails userDetails) {
-        Monitor createdMontior = monitorService.createMonitor(monitor, userDetails.getId());
+        Monitor createdMonitor = monitorService.createMonitor(monitor, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 new MonitorResponse(
-                        createdMontior.getId(),
-                        createdMontior.getUrl(),
-                        createdMontior.getPollPeriodSeconds(),
-                        createdMontior.isActive(),
+                        createdMonitor.getId(),
+                        createdMonitor.getUrl(),
+                        createdMonitor.getPollPeriodSeconds(),
+                        createdMonitor.isActive(),
                         userDetails.getId()
                 ));
     }
