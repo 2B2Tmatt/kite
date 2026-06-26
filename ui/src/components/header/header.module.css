@@ -23,7 +23,7 @@
   font-size: var(--mantine-font-size-sm);
   font-weight: 500;
 
-  @media (max-width: var(--mantine-breakpoint-sm)) {
+  @media (max-width: $mantine-breakpoint-sm) {
     border-radius: 0;
     padding: var(--mantine-spacing-md);
   }

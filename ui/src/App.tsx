@@ -7,6 +7,10 @@ import Homepage from "./pages/homepage";
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Homepage />,
+  },
+  {
+    path: "/monitors",
     element: <DashboardLayout />,
     children: [
       {
